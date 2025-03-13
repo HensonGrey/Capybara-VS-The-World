@@ -27,9 +27,9 @@ const GameHeader = ({ className }: GameHeaderProps) => {
         <Text className="text-white text-2xl ml-2">0</Text>
       </View>
 
-      {/* Health Bar - Give it as much space as possible */}
+      {/* Health Bar */}
       <View className="flex-1 mx-3">
-        <HealthBar currentHealth={70} maxHealth={100} />
+        <HealthBar currentHealth={100} maxHealth={100} />
       </View>
 
       {/* Clock */}

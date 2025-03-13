@@ -7,8 +7,8 @@ export default function Index() {
   return (
     <SafeAreaView className="h-screen flex" style={{ flex: 1 }}>
       <GameHeader className="bg-gray-400 border" />
-      <View style={{ flex: 8 }} className="bg-black border"></View>
-      <GameFooter className="bg-gray-400 border" />
+      <View style={{ flex: 8 }} className=""></View>
+      <GameFooter className="bg-gray-300" />
     </SafeAreaView>
   );
 }
