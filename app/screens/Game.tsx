@@ -5,6 +5,7 @@ import { GameEngine } from "react-native-game-engine";
 import Player from "../entities/Player";
 import Physics from "../systems/Physics";
 import Wall from "../entities/Wall";
+import Minion from "../entities/Minion";
 
 const Game = () => {
   // State for dimensions and entities
@@ -55,6 +56,7 @@ const Game = () => {
 
     return {
       physics: { engine, world },
+      dimensions: { width: dimensions.width, height: dimensions.height },
       player: {
         body: player,
         size: [50, 50],
@@ -71,6 +73,7 @@ const Game = () => {
         rotation: wall.angle,
         renderer: Wall,
       },
+      minionRenderer: Minion,
     };
   };
 
