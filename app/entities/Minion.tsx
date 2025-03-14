@@ -4,13 +4,12 @@ import { Body } from "matter-js";
 
 interface MinionProps {
   body: Body;
-  size: [number, number];
 }
 
 // hierarchy is minion < mini < boss
-const Minion = ({ body, size }: MinionProps) => {
-  const x = body.position.x - size[0] / 2;
-  const y = body.position.y - size[1] / 2;
+const Minion = ({ body }: MinionProps) => {
+  const x = body.position.x - 15;
+  const y = body.position.y - 15;
 
   return (
     <View

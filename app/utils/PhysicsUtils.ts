@@ -23,7 +23,7 @@ export const handleMinions = (entities: any, delta: number) => {
   const minWidth = 25;
   const maxWidth = entities.dimensions.width - 25;
 
-  if (entities.physics.minionSpawnTimer > 1250) {
+  if (entities.physics.minionSpawnTimer > 750) {
     const spawnX = Math.random() * (maxWidth - minWidth) + minWidth;
     const spawnY = -25;
 
@@ -37,10 +37,60 @@ export const handleMinions = (entities: any, delta: number) => {
     const minionId = `minion_${new Date().getTime()}`;
     entities[minionId] = {
       body: minion,
-      size: [25, 25],
       renderer: entities.minionRenderer,
     };
 
     entities.physics.minionSpawnTimer = 0;
   }
+};
+
+export const handleShooting = (entities: any, delta: number) => {
+  if (!entities.physics.bulletShootTimer) entities.physics.bulletShootTimer = 0;
+  entities.physics.bulletShootTimer += delta;
+
+  updateBullets(entities);
+
+  if (entities.physics.bulletShootTimer > 200) {
+    const player = entities.player.body;
+
+    const bullet = Matter.Bodies.rectangle(
+      player.position.x,
+      player.position.y - 40,
+      25,
+      15,
+      { isSensor: true, frictionAir: 0 }
+    );
+
+    (bullet as any).shouldRemove = () => bullet.position.y < -50;
+
+    Matter.Body.setVelocity(bullet, { x: 0, y: -10 });
+    Matter.World.add(entities.physics.engine.world, bullet);
+
+    const bulletId = `bullet_${new Date().getTime()}`;
+    entities[bulletId] = {
+      body: bullet,
+      renderer: entities.bulletRenderer,
+    };
+    console.log(
+      "Bullet count:",
+      Object.keys(entities).filter((key) => key.startsWith("bullet_")).length
+    );
+    entities.physics.bulletShootTimer = 0;
+  }
+};
+
+const updateBullets = (entities: any) => {
+  Object.keys(entities)
+    .filter((key) => key.startsWith("bullet_"))
+    .forEach((key) => {
+      const bullet = entities[key].body;
+      if ((bullet as any).shouldRemove()) {
+        Matter.World.remove(entities.physics.engine.world, bullet);
+        delete entities[key];
+        console.log("deleted bullet");
+      } else {
+        //keeping velocity up because cant disable gravity
+        Matter.Body.setVelocity(bullet, { x: 0, y: -10 });
+      }
+    });
 };

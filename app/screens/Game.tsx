@@ -6,6 +6,7 @@ import Player from "../entities/Player";
 import Physics from "../systems/Physics";
 import Wall from "../entities/Wall";
 import Minion from "../entities/Minion";
+import Bullet from "../entities/Bullet";
 
 const Game = () => {
   // State for dimensions and entities
@@ -67,13 +68,14 @@ const Game = () => {
       },
       wall: {
         body: wall,
-        size: [dimensions.width, 50], // width of the screen, 50px height
+        size: [dimensions.width, 50],
         color: "brown",
         position: wall.position,
         rotation: wall.angle,
         renderer: Wall,
       },
       minionRenderer: Minion,
+      bulletRenderer: Bullet,
     };
   };
 
