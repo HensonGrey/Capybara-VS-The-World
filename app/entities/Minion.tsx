@@ -6,10 +6,9 @@ interface MinionProps {
   body: Body;
 }
 
-// hierarchy is minion < mini < boss
 const Minion = ({ body }: MinionProps) => {
-  const x = body.position.x - 15;
-  const y = body.position.y - 15;
+  const x = body.position.x;
+  const y = body.position.y;
 
   return (
     <View
@@ -17,8 +16,8 @@ const Minion = ({ body }: MinionProps) => {
         position: "absolute",
         left: x,
         top: y,
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
       }}
       className="bg-black border-2 border-amber-900 rounded-md"
     />

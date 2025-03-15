@@ -7,6 +7,9 @@ import Physics from "../systems/Physics";
 import Wall from "../entities/Wall";
 import Minion from "../entities/Minion";
 import Bullet from "../entities/Bullet";
+import { PlayerSystem } from "../systems/PlayerSystem";
+import { BulletSystem } from "../systems/BulletSystem";
+import { EnemySystem } from "../systems/EnemySystem";
 
 const Game = () => {
   // State for dimensions and entities
@@ -46,11 +49,11 @@ const Game = () => {
     );
 
     const wall = Matter.Bodies.rectangle(
-      dimensions.width / 2, // center horizontally
-      dimensions.height - 225,
+      dimensions.width / 2,
+      player.position.y - 100,
       dimensions.width,
       50,
-      { isStatic: true } // static wall (non-moving)
+      { isStatic: true }
     );
 
     Matter.World.add(world, [player, wall]);
@@ -60,18 +63,12 @@ const Game = () => {
       dimensions: { width: dimensions.width, height: dimensions.height },
       player: {
         body: player,
-        size: [50, 50],
-        color: "red",
         position: player.position,
-        rotation: player.angle,
         renderer: Player,
       },
       wall: {
         body: wall,
-        size: [dimensions.width, 50],
-        color: "brown",
         position: wall.position,
-        rotation: wall.angle,
         renderer: Wall,
       },
       minionRenderer: Minion,
@@ -82,7 +79,10 @@ const Game = () => {
   return (
     <View style={{ flex: 8 }} onLayout={onLayout}>
       {dimensions.width > 0 && entities ? (
-        <GameEngine systems={[Physics]} entities={entities} />
+        <GameEngine
+          systems={[Physics, PlayerSystem, BulletSystem, EnemySystem]}
+          entities={entities}
+        />
       ) : (
         <Text>Loading...</Text>
       )}

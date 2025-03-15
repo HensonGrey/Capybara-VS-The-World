@@ -16,8 +16,8 @@ const Bullet = ({ body }: BulletProps) => {
         position: "absolute",
         left: x,
         top: y,
-        width: 25,
-        height: 15,
+        width: 15,
+        height: 25,
       }}
       className="bg-blue-300 border-2 border-yellow-400 rounded-md"
     />

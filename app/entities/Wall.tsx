@@ -1,30 +1,16 @@
 import { View } from "react-native";
 import React from "react";
-import { Body } from "matter-js";
 
-interface WallProps {
-  body: Body;
-  size: [number, number];
-}
-
-const Wall = ({ body, size }: WallProps) => {
-  const width = size[0];
-  const height = size[1];
-
-  const x = body.position.x - width / 2;
-  const y = body.position.y;
-
+const Wall = () => {
   return (
     <View
       style={{
         position: "absolute",
-        left: x,
-        top: y,
-        width: width,
-        height: height,
+        left: 0,
+        bottom: 100,
         backgroundColor: "brown",
       }}
-      className="rounded-lg"
+      className="rounded-lg w-full h-12"
     />
   );
 };
