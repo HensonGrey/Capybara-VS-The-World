@@ -1,6 +1,5 @@
 import { Bullet, Minion } from "@/types/entityTypes";
 import Matter from "matter-js";
-import { useDispatch } from "react-redux";
 import { addCoins } from "../redux/slices/coinsSlice";
 import { AppDispatch } from "../redux/store";
 
@@ -9,11 +8,7 @@ const MAX_DELTA = 990 / 60;
 let collisionListenerAdded = false;
 const processedCollisions = new Set();
 
-export const BulletSystem = (
-  entities: any,
-  { time }: any,
-  dispatch: AppDispatch
-) => {
+const BulletSystem = (entities: any, { time }: any, dispatch: AppDispatch) => {
   handleShooting(entities, Math.min(time.delta, MAX_DELTA));
 
   // Only set up the collision listener once
@@ -150,3 +145,5 @@ const getMinionId = (body: Minion, entities: any): string | undefined => {
     (key) => key.startsWith("minion_") && entities[key].body === body
   );
 };
+
+export default BulletSystem;

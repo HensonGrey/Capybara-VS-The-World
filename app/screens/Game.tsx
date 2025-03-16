@@ -7,15 +7,17 @@ import Physics from "../systems/Physics";
 import Wall from "../entities/Wall";
 import Minion from "../entities/Minion";
 import Bullet from "../entities/Bullet";
-import { PlayerSystem } from "../systems/PlayerSystem";
-import { BulletSystem } from "../systems/BulletSystem";
-import { EnemySystem } from "../systems/EnemySystem";
+import PlayerSystem from "../systems/PlayerSystem";
+import BulletSystem from "../systems/BulletSystem";
+import EnemySystem from "../systems/EnemySystem";
 import { IWall } from "@/types/entityTypes";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 const Game = () => {
   // State for dimensions and entities
   const dispatch = useDispatch();
+  const upgrades = useSelector((state: RootState) => state.temporaryUpgrades);
 
   const [dimensions, setDimensions] = useState<{
     width: number;
@@ -60,7 +62,7 @@ const Game = () => {
       { isStatic: true, label: "wall" }
     ) as IWall;
 
-    wall.health = 10;
+    wall.health = upgrades.currentWallHealth;
 
     Matter.World.add(world, [player, wall]);
 

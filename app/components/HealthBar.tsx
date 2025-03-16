@@ -8,9 +8,14 @@ interface HealthBarProps {
 }
 
 const HealthBar = ({ className }: HealthBarProps) => {
-  const wallHealth = useSelector((state: RootState) => state.wall);
+  const currentWallHealth = useSelector(
+    (state: RootState) => state.temporaryUpgrades.currentWallHealth
+  );
+  const maximumWallHealth = useSelector(
+    (state: RootState) => state.temporaryUpgrades.maximumWallHealth
+  );
   const healthPercentage = Math.max(
-    (wallHealth.currentHealth / wallHealth.maxHealth) * 100,
+    (currentWallHealth / maximumWallHealth) * 100,
     0
   );
 
@@ -21,7 +26,7 @@ const HealthBar = ({ className }: HealthBarProps) => {
         style={{ width: `${healthPercentage}%` }}
       />
       <Text className="absolute w-full text-center text-white text-lg font-bold">
-        {wallHealth.currentHealth} / {wallHealth.maxHealth}
+        {currentWallHealth} / {maximumWallHealth}
       </Text>
     </View>
   );

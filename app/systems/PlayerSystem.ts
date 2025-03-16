@@ -1,6 +1,6 @@
 import Matter from "matter-js";
 
-export const PlayerSystem = (entities: any, { touches }: any) => {
+const PlayerSystem = (entities: any, { touches }: any) => {
   Matter.Body.setVelocity(entities.player.body, { x: 0, y: 0 });
 
   if (touches.length > 0) {
@@ -30,3 +30,5 @@ const handlePlayerMovement = (entities: any, touch: any) => {
   // Zero out velocity
   Matter.Body.setVelocity(player.body, { x: 0, y: 0 });
 };
+
+export default PlayerSystem;

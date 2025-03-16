@@ -11,5 +11,4 @@ export const coinsSlice = createSlice({
 });
 
 export const { addCoins, removeCoins } = coinsSlice.actions;
-
 export default coinsSlice.reducer;
