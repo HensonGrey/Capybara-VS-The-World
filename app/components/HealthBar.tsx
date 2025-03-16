@@ -1,14 +1,18 @@
 import React from "react";
 import { View, Text } from "react-native";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 interface HealthBarProps {
-  currentHealth: number;
-  maxHealth: number;
   className?: string;
 }
 
-const HealthBar = ({ currentHealth, maxHealth, className }: HealthBarProps) => {
-  const healthPercentage = Math.max((currentHealth / maxHealth) * 100, 0);
+const HealthBar = ({ className }: HealthBarProps) => {
+  const wallHealth = useSelector((state: RootState) => state.wall);
+  const healthPercentage = Math.max(
+    (wallHealth.currentHealth / wallHealth.maxHealth) * 100,
+    0
+  );
 
   return (
     <View className={`w-full h-8 bg-gray-700 rounded-lg border ${className}`}>
@@ -17,7 +21,7 @@ const HealthBar = ({ currentHealth, maxHealth, className }: HealthBarProps) => {
         style={{ width: `${healthPercentage}%` }}
       />
       <Text className="absolute w-full text-center text-white text-lg font-bold">
-        {currentHealth} / {maxHealth}
+        {wallHealth.currentHealth} / {wallHealth.maxHealth}
       </Text>
     </View>
   );

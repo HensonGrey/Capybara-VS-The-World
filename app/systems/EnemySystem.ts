@@ -1,12 +1,18 @@
 import { IWall, Minion } from "@/types/entityTypes";
-import Matter, { Body } from "matter-js";
+import Matter from "matter-js";
+import { AppDispatch } from "../redux/store";
+import { removeHealth } from "../redux/slices/wallSlice";
 
 let minionSpawnTimer = 0;
 const MAX_DELTA = 990 / 60;
 let collisionListenerAdded = false;
 const processedCollisions = new Set();
 
-export const EnemySystem = (entities: any, { time }: any) => {
+export const EnemySystem = (
+  entities: any,
+  { time }: any,
+  dispatch: AppDispatch
+) => {
   minionSpawnTimer += Math.min(MAX_DELTA, time.delta);
   if (minionSpawnTimer >= 1500) handleMinionSpawning(entities);
 
@@ -15,7 +21,7 @@ export const EnemySystem = (entities: any, { time }: any) => {
       entities.physics.engine,
       "collisionStart",
       (event: Matter.IEvent<any>) => {
-        onCollide(entities, event);
+        onCollide(entities, event, dispatch);
       }
     );
 
@@ -53,7 +59,7 @@ const handleMinionSpawning = (entities: any) => {
   minionSpawnTimer = 0;
 };
 
-const onCollide = (entities: any, event: any) => {
+const onCollide = (entities: any, event: any, dispatch: AppDispatch) => {
   const pairs = event.pairs;
 
   for (let i = 0; i < pairs.length; i++) {
@@ -85,7 +91,7 @@ const onCollide = (entities: any, event: any) => {
       processedCollisions.add(collisionId);
 
       // Process the collision
-      handleCollisionStart(minion, wall, entities);
+      handleCollisionStart(minion, wall, entities, dispatch);
 
       // Clean up after a short delay
       setTimeout(() => {
@@ -96,7 +102,12 @@ const onCollide = (entities: any, event: any) => {
 };
 
 //imagine the minion is ziggs or a kamikaze, he dies to damage the tower
-const handleCollisionStart = (minion: Minion, wall: IWall, entities: any) => {
+const handleCollisionStart = (
+  minion: Minion,
+  wall: IWall,
+  entities: any,
+  dispatch: AppDispatch
+) => {
   const wallId = getWallId(wall, entities);
   const minionId = getMinionId(minion, entities);
 
@@ -104,6 +115,7 @@ const handleCollisionStart = (minion: Minion, wall: IWall, entities: any) => {
 
   // Damage the wall with minion's damage
   wall.health -= minion.damage;
+  dispatch(removeHealth());
 
   // Check if wall should be destroyed
   if (wall.health <= 0) {

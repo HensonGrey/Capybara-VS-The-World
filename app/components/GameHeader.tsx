@@ -3,12 +3,16 @@ import React from "react";
 import { Coins, EllipsisVertical } from "lucide-react-native";
 import HealthBar from "./HealthBar";
 import Clock from "./Clock";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 interface GameHeaderProps {
   className?: string;
 }
 
 const GameHeader = ({ className }: GameHeaderProps) => {
+  const coins = useSelector((state: RootState) => state.coins);
+
   return (
     <View className={`${className} flex-row items-center p-4`}>
       {/* Menu Button */}
@@ -24,12 +28,12 @@ const GameHeader = ({ className }: GameHeaderProps) => {
       {/* Coins */}
       <View className="flex-row items-center">
         <Coins size={36} color="gold" />
-        <Text className="text-white text-2xl ml-2">0</Text>
+        <Text className="text-white text-2xl ml-2">{coins}</Text>
       </View>
 
       {/* Health Bar */}
       <View className="flex-1 mx-3">
-        <HealthBar currentHealth={100} maxHealth={100} />
+        <HealthBar />
       </View>
 
       {/* Clock */}

@@ -11,9 +11,12 @@ import { PlayerSystem } from "../systems/PlayerSystem";
 import { BulletSystem } from "../systems/BulletSystem";
 import { EnemySystem } from "../systems/EnemySystem";
 import { IWall } from "@/types/entityTypes";
+import { useDispatch } from "react-redux";
 
 const Game = () => {
   // State for dimensions and entities
+  const dispatch = useDispatch();
+
   const [dimensions, setDimensions] = useState<{
     width: number;
     height: number;
@@ -83,7 +86,14 @@ const Game = () => {
     <View style={{ flex: 8 }} onLayout={onLayout}>
       {dimensions.width > 0 && entities ? (
         <GameEngine
-          systems={[Physics, PlayerSystem, BulletSystem, EnemySystem]}
+          systems={[
+            Physics,
+            PlayerSystem,
+            (entities: any, { time }: any) =>
+              BulletSystem(entities, { time }, dispatch),
+            (entities: any, { time }: any) =>
+              EnemySystem(entities, { time }, dispatch),
+          ]}
           entities={entities}
         />
       ) : (

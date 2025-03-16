@@ -1,12 +1,19 @@
 import { Bullet, Minion } from "@/types/entityTypes";
 import Matter from "matter-js";
+import { useDispatch } from "react-redux";
+import { addCoins } from "../redux/slices/coinsSlice";
+import { AppDispatch } from "../redux/store";
 
 let bulletSpawnTimer = 0;
 const MAX_DELTA = 990 / 60;
 let collisionListenerAdded = false;
 const processedCollisions = new Set();
 
-export const BulletSystem = (entities: any, { time }: any) => {
+export const BulletSystem = (
+  entities: any,
+  { time }: any,
+  dispatch: AppDispatch
+) => {
   handleShooting(entities, Math.min(time.delta, MAX_DELTA));
 
   // Only set up the collision listener once
@@ -15,7 +22,7 @@ export const BulletSystem = (entities: any, { time }: any) => {
       entities.physics.engine,
       "collisionStart",
       (event: Matter.IEvent<any>) => {
-        onEnemyHit(entities, event);
+        onEnemyHit(entities, event, dispatch);
       }
     );
 
@@ -65,7 +72,7 @@ const deleteOutOfBoundsBullets = (entities: any) => {
     });
 };
 
-const onEnemyHit = (entities: any, event: any) => {
+const onEnemyHit = (entities: any, event: any, dispatch: AppDispatch) => {
   const pairs = event.pairs;
 
   for (let i = 0; i < pairs.length; i++) {
@@ -97,7 +104,7 @@ const onEnemyHit = (entities: any, event: any) => {
       processedCollisions.add(collisionId);
 
       // Process the collision
-      handleCollision(minion, bullet, entities);
+      handleCollision(minion, bullet, entities, dispatch);
 
       // Clean up after a short delay
       setTimeout(() => {
@@ -107,7 +114,12 @@ const onEnemyHit = (entities: any, event: any) => {
   }
 };
 
-const handleCollision = (minion: Minion, bullet: Bullet, entities: any) => {
+const handleCollision = (
+  minion: Minion,
+  bullet: Bullet,
+  entities: any,
+  dispatch: AppDispatch
+) => {
   const bulletId = getBulletId(bullet, entities);
   const minionId = getMinionId(minion, entities);
 
@@ -119,6 +131,8 @@ const handleCollision = (minion: Minion, bullet: Bullet, entities: any) => {
   if (minion.health <= 0) {
     Matter.World.remove(entities.physics.world, minion);
     delete entities[minionId];
+
+    dispatch(addCoins(5));
   }
 
   Matter.World.remove(entities.physics.world, bullet);
