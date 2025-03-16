@@ -1,5 +1,5 @@
-import { IWall, Minion } from "@/types/entityTypes";
-import Matter from "matter-js";
+import { Minion } from "@/types/entityTypes";
+import Matter, { Body } from "matter-js";
 import { AppDispatch } from "../redux/store";
 import { lowerWallHealth } from "../redux/slices/temporaryUpgradesSlice";
 import store from "../redux/store";
@@ -95,7 +95,7 @@ const onCollide = (entities: any, event: any, dispatch: AppDispatch) => {
 
 const handleCollisionStart = (
   minion: Minion,
-  wall: IWall,
+  wall: Body,
   entities: any,
   dispatch: AppDispatch
 ) => {
@@ -106,17 +106,13 @@ const handleCollisionStart = (
 
   if (!wallId || !minionId) return;
 
-  // Damage the wall with minion's damage
-  // wall.health -= minion.damage;
   dispatch(lowerWallHealth(minion.damage));
 
-  // Check if wall should be destroyed
   if (currentWallHealth <= 1) {
     Matter.World.remove(entities.physics.world, wall);
     delete entities[wallId];
   }
 
-  // Kamikaze behavior - minion dies on collision
   Matter.World.remove(entities.physics.world, minion);
   delete entities[minionId];
 };
@@ -131,7 +127,7 @@ export const getMinionId = (
   );
 };
 
-const getWallId = (wall: IWall, entities: any): string | undefined => {
+const getWallId = (wall: Body, entities: any): string | undefined => {
   return Object.keys(entities).find((key) => entities[key].body === wall);
 };
 

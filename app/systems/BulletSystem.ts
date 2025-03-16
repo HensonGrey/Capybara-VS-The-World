@@ -1,7 +1,8 @@
-import { Bullet, Minion } from "@/types/entityTypes";
-import Matter from "matter-js";
+import { Minion } from "@/types/entityTypes";
+import Matter, { Body } from "matter-js";
 import { addCoins } from "../redux/slices/coinsSlice";
 import { AppDispatch } from "../redux/store";
+import store from "../redux/store";
 
 let bulletSpawnTimer = 0;
 const MAX_DELTA = 990 / 60;
@@ -39,9 +40,7 @@ const handleShooting = (entities: any, delta: number) => {
     15,
     25,
     { isSensor: true, frictionAir: 0, label: "bullet" }
-  ) as Bullet;
-
-  bullet.damage = 1;
+  );
 
   Matter.World.add(entities.physics.world, bullet);
   Matter.Body.applyForce(bullet, bullet.position, { x: 0, y: -0.05 });
@@ -111,7 +110,7 @@ const onEnemyHit = (entities: any, event: any, dispatch: AppDispatch) => {
 
 const handleCollision = (
   minion: Minion,
-  bullet: Bullet,
+  bullet: Body,
   entities: any,
   dispatch: AppDispatch
 ) => {
@@ -121,7 +120,9 @@ const handleCollision = (
   // Safety check - only proceed if both entities still exist
   if (!bulletId || !minionId) return;
 
-  minion.health -= bullet.damage;
+  const bulletDamage = store.getState().temporaryUpgrades.bulletDamage;
+
+  minion.health -= bulletDamage;
 
   if (minion.health <= 0) {
     Matter.World.remove(entities.physics.world, minion);
@@ -134,7 +135,7 @@ const handleCollision = (
   delete entities[bulletId];
 };
 
-const getBulletId = (body: Bullet, entities: any): string | undefined => {
+const getBulletId = (body: Body, entities: any): string | undefined => {
   return Object.keys(entities).find(
     (key) => key.startsWith("bullet_") && entities[key].body === body
   );

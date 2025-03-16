@@ -5,7 +5,11 @@ import { Heart, Plus, Swords } from "lucide-react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { removeCoins } from "../redux/slices/coinsSlice";
-import { increaseWallHealth } from "../redux/slices/temporaryUpgradesSlice";
+import {
+  increaseBulletDamage,
+  increasePlayerCount,
+  increaseWallHealth,
+} from "../redux/slices/temporaryUpgradesSlice";
 
 interface GameFooterProps {
   className: string;
@@ -18,16 +22,16 @@ interface Price {
 
 const GameFooter = ({ className }: GameFooterProps) => {
   const [arrayPrices, setArrayPrices] = useState<Price[]>([
-    { index: 0, price: [25, 50, 50] },
-    { index: 0, price: [25, 50, 50] },
-    { index: 0, price: [10, 50, 50] },
+    { index: 0, price: [25, 50] },
+    { index: 0, price: [25, 50] },
+    { index: 0, price: [10, 50] },
   ]);
 
   const dispatch = useDispatch();
   const coins = useSelector((state: RootState) => state.coins);
 
   const getPrice = (arrayIndex: number): string | number => {
-    return arrayPrices[arrayIndex].index <= 2
+    return arrayPrices[arrayIndex].index <= 1
       ? arrayPrices[arrayIndex].price[arrayPrices[arrayIndex].index]
       : "MAX";
   };
@@ -35,14 +39,32 @@ const GameFooter = ({ className }: GameFooterProps) => {
   const canUpgrade = (arrayIndex: number): boolean => {
     const index = arrayPrices[arrayIndex].index;
     const price = arrayPrices[arrayIndex].price[index];
-    return price <= coins && index <= 2;
+    return price <= coins && index <= 1;
   };
 
-  const addNewPlayer = () => {};
-  const increaseDamage = () => {};
+  //price will be checked in the component itself,
+  //in case of not enough coins, user wont even be able to click the button
+  const addNewPlayer = () => {
+    const price = arrayPrices[0].index;
+    dispatch(removeCoins(price));
+    dispatch(increasePlayerCount());
+    setArrayPrices((prevArrayPrices) => {
+      const updatedArray = [...prevArrayPrices];
+      updatedArray[0].index = updatedArray[0].index + 1;
+      return updatedArray;
+    });
+  };
+  const increaseDamage = () => {
+    const price = arrayPrices[1].index;
+    dispatch(removeCoins(price));
+    dispatch(increaseBulletDamage());
+    setArrayPrices((prevArrayPrices) => {
+      const updatedArray = [...prevArrayPrices];
+      updatedArray[1].index = updatedArray[1].index + 1;
+      return updatedArray;
+    });
+  };
   const increaseWallDurability = () => {
-    //price will be checked in the component itself,
-    //in case of not enough coins, user wont even be able to click the button
     const price = arrayPrices[2].index;
     dispatch(removeCoins(price));
     dispatch(increaseWallHealth());

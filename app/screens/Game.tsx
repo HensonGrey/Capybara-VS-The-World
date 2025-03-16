@@ -10,7 +10,6 @@ import Bullet from "../entities/Bullet";
 import PlayerSystem from "../systems/PlayerSystem";
 import BulletSystem from "../systems/BulletSystem";
 import EnemySystem from "../systems/EnemySystem";
-import { IWall } from "@/types/entityTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
@@ -60,9 +59,7 @@ const Game = () => {
       dimensions.width,
       50,
       { isStatic: true, label: "wall" }
-    ) as IWall;
-
-    wall.health = upgrades.currentWallHealth;
+    );
 
     Matter.World.add(world, [player, wall]);
 
