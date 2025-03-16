@@ -8,3 +8,7 @@ export interface Minion extends Body {
 export interface Bullet extends Body {
   damage: number;
 }
+
+export interface IWall extends Body {
+  health: number;
+}

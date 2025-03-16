@@ -10,6 +10,7 @@ import Bullet from "../entities/Bullet";
 import { PlayerSystem } from "../systems/PlayerSystem";
 import { BulletSystem } from "../systems/BulletSystem";
 import { EnemySystem } from "../systems/EnemySystem";
+import { IWall } from "@/types/entityTypes";
 
 const Game = () => {
   // State for dimensions and entities
@@ -53,8 +54,10 @@ const Game = () => {
       player.position.y - 100,
       dimensions.width,
       50,
-      { isStatic: true }
-    );
+      { isStatic: true, label: "wall" }
+    ) as IWall;
+
+    wall.health = 10;
 
     Matter.World.add(world, [player, wall]);
 

@@ -11,9 +11,6 @@ export const BulletSystem = (entities: any, { time }: any) => {
 
   // Only set up the collision listener once
   if (!collisionListenerAdded && entities.physics && entities.physics.engine) {
-    // Remove any existing listeners first to be safe
-    Matter.Events.off(entities.physics.engine, "collisionStart");
-
     Matter.Events.on(
       entities.physics.engine,
       "collisionStart",
