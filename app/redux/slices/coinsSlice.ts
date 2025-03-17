@@ -7,8 +7,9 @@ export const coinsSlice = createSlice({
     addCoins: (state, action: PayloadAction<number>) => state + action.payload,
     removeCoins: (state, action: PayloadAction<number>) =>
       state - action.payload,
+    resetCoins: () => 0,
   },
 });
 
-export const { addCoins, removeCoins } = coinsSlice.actions;
+export const { addCoins, removeCoins, resetCoins } = coinsSlice.actions;
 export default coinsSlice.reducer;

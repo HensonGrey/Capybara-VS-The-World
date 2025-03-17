@@ -3,17 +3,18 @@ import Matter, { Body } from "matter-js";
 import { AppDispatch } from "../redux/store";
 import { lowerWallHealth } from "../redux/slices/temporaryUpgradesSlice";
 import store from "../redux/store";
+import { toggleGameState } from "../redux/slices/gameSlice";
 
 let minionSpawnTimer = 0;
 const MAX_DELTA = 990 / 60;
-let collisionListenerAdded = false;
-const processedCollisions = new Set();
+let processedCollisions = new Set();
 
 const EnemySystem = (entities: any, { time }: any, dispatch: AppDispatch) => {
   minionSpawnTimer += Math.min(MAX_DELTA, time.delta);
   if (minionSpawnTimer >= 1500) handleMinionSpawning(entities);
 
-  if (!collisionListenerAdded && entities.physics && entities.physics.engine) {
+  // Reattach the collision listener after the world has been cleared
+  if (entities.physics && entities.physics.engine) {
     Matter.Events.on(
       entities.physics.engine,
       "collisionStart",
@@ -21,9 +22,8 @@ const EnemySystem = (entities: any, { time }: any, dispatch: AppDispatch) => {
         onCollide(entities, event, dispatch);
       }
     );
-
-    collisionListenerAdded = true;
   }
+
   return entities;
 };
 
@@ -109,6 +109,7 @@ const handleCollisionStart = (
   dispatch(lowerWallHealth(minion.damage));
 
   if (currentWallHealth <= 1) {
+    dispatch(toggleGameState());
     Matter.World.remove(entities.physics.world, wall);
     delete entities[wallId];
   }

@@ -32,6 +32,12 @@ const temporaryUpgradesSlice = createSlice({
     lowerWallHealth: (state, action: PayloadAction<number>) => {
       state.currentWallHealth -= action.payload;
     },
+    resetGame: (state) => {
+      state.bulletDamage = 1;
+      state.currentWallHealth = 3;
+      state.maximumWallHealth = 3;
+      state.playerCount = 1;
+    },
   },
 });
 
@@ -40,5 +46,6 @@ export const {
   increasePlayerCount,
   increaseWallHealth,
   lowerWallHealth,
+  resetGame,
 } = temporaryUpgradesSlice.actions;
 export default temporaryUpgradesSlice.reducer;

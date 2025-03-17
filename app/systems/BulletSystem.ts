@@ -6,14 +6,13 @@ import store from "../redux/store";
 
 let bulletSpawnTimer = 0;
 const MAX_DELTA = 990 / 60;
-let collisionListenerAdded = false;
-const processedCollisions = new Set();
+let processedCollisions = new Set(); // Reset processedCollisions on world reset
 
 const BulletSystem = (entities: any, { time }: any, dispatch: AppDispatch) => {
   handleShooting(entities, Math.min(time.delta, MAX_DELTA));
 
-  // Only set up the collision listener once
-  if (!collisionListenerAdded && entities.physics && entities.physics.engine) {
+  // Reattach the collision listener after the world has been cleared
+  if (entities.physics && entities.physics.engine) {
     Matter.Events.on(
       entities.physics.engine,
       "collisionStart",
@@ -21,8 +20,6 @@ const BulletSystem = (entities: any, { time }: any, dispatch: AppDispatch) => {
         onEnemyHit(entities, event, dispatch);
       }
     );
-
-    collisionListenerAdded = true;
   }
 
   return entities;

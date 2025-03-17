@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Matter from "matter-js";
 import { GameEngine } from "react-native-game-engine";
 import Player from "../entities/Player";
@@ -12,11 +12,16 @@ import BulletSystem from "../systems/BulletSystem";
 import EnemySystem from "../systems/EnemySystem";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { useRouter } from "expo-router";
+import { resetGame } from "../redux/slices/temporaryUpgradesSlice";
+import { resetCoins } from "../redux/slices/coinsSlice";
 
 const Game = () => {
   // State for dimensions and entities
   const dispatch = useDispatch();
-  const upgrades = useSelector((state: RootState) => state.temporaryUpgrades);
+  const gameState = useSelector((state: RootState) => state.game);
+  const gameEngineRef = useRef(null);
+  const router = useRouter();
 
   const [dimensions, setDimensions] = useState<{
     width: number;
@@ -28,18 +33,26 @@ const Game = () => {
 
   const [entities, setEntities] = useState<any>(null);
 
-  // Get dimensions when component mounts
   const onLayout = (event: any) => {
     const { width, height } = event.nativeEvent.layout;
     setDimensions({ width, height });
   };
 
-  // Set up the world when dimensions are available
   useEffect(() => {
     if (dimensions.width > 0 && dimensions.height > 0) {
       setEntities(setupWorld());
     }
   }, [dimensions.width, dimensions.height]);
+
+  useEffect(() => {
+    if (gameState === false) {
+      dispatch(resetGame());
+      dispatch(resetCoins());
+
+      clearWorld();
+      router.navigate("/screens/GameOverScreen");
+    }
+  }, [gameState]);
 
   const setupWorld = () => {
     const engine = Matter.Engine.create({ enableSleeping: false });
@@ -81,10 +94,18 @@ const Game = () => {
     };
   };
 
+  const clearWorld = () => {
+    if (entities?.physics?.world) {
+      Matter.World.clear(entities.physics.world, true);
+      Matter.Engine.clear(entities.physics.engine);
+    }
+  };
+
   return (
     <View style={{ flex: 8 }} onLayout={onLayout}>
       {dimensions.width > 0 && entities ? (
         <GameEngine
+          ref={gameEngineRef}
           systems={[
             Physics,
             PlayerSystem,
@@ -94,6 +115,7 @@ const Game = () => {
               EnemySystem(entities, { time }, dispatch),
           ]}
           entities={entities}
+          running={gameState}
         />
       ) : (
         <Text>Loading...</Text>
