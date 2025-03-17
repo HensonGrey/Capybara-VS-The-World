@@ -1,6 +1,6 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import React from "react";
-import { Coins, EllipsisVertical } from "lucide-react-native";
+import { Coins } from "lucide-react-native";
 import HealthBar from "./HealthBar";
 import Clock from "./Clock";
 import { useSelector } from "react-redux";
@@ -15,16 +15,6 @@ const GameHeader = ({ className }: GameHeaderProps) => {
 
   return (
     <View className={`${className} flex-row items-center p-4`}>
-      {/* Menu Button */}
-      <View className="w-12 items-start">
-        <TouchableOpacity className="-ml-1">
-          <EllipsisVertical size={36} color="black" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Space to create separation */}
-      <View className="w-4" />
-
       {/* Coins */}
       <View className="flex-row items-center">
         <Coins size={36} color="gold" />

@@ -1,32 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Text, View } from "react-native";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import useGameClock from "../hooks/useGameClock";
 
-interface ClockProps {
-  onStart?: () => void;
-  onEnd?: () => void;
-}
-
-const Clock = ({ onStart, onEnd }: ClockProps) => {
-  const [seconds, setSeconds] = useState(0);
-  const [running, setRunning] = useState(false);
-
-  useEffect(() => {
-    if (running) {
-      if (seconds === 0 && onStart) onStart();
-      const interval = setInterval(() => {
-        setSeconds((prev) => prev + 1);
-      }, 1000);
-      return () => clearInterval(interval);
-    } else if (seconds > 0 && onEnd) {
-      onEnd();
-    }
-  }, [running]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  };
+const Clock = () => {
+  useGameClock(); // Use the hook
+  const seconds = useSelector((state: RootState) => state.clock);
 
   return (
     <View className="items-center">
@@ -35,6 +15,12 @@ const Clock = ({ onStart, onEnd }: ClockProps) => {
       </Text>
     </View>
   );
+};
+
+export const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 };
 
 export default Clock;

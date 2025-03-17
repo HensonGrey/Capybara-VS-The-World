@@ -15,11 +15,13 @@ import { RootState } from "../redux/store";
 import { useRouter } from "expo-router";
 import { resetGame } from "../redux/slices/temporaryUpgradesSlice";
 import { resetCoins } from "../redux/slices/coinsSlice";
+import { resetTime } from "../redux/slices/clockSlice";
 
 const Game = () => {
   // State for dimensions and entities
   const dispatch = useDispatch();
   const gameState = useSelector((state: RootState) => state.game);
+  const seconds = useSelector((state: RootState) => state.clock);
   const gameEngineRef = useRef(null);
   const router = useRouter();
 
@@ -46,11 +48,15 @@ const Game = () => {
 
   useEffect(() => {
     if (gameState === false) {
+      let timeCopy = seconds;
       dispatch(resetGame());
       dispatch(resetCoins());
-
+      dispatch(resetTime());
       clearWorld();
-      router.navigate("/screens/GameOverScreen");
+      router.navigate({
+        pathname: "/screens/GameOverScreen",
+        params: { timeCopy },
+      });
     }
   }, [gameState]);
 

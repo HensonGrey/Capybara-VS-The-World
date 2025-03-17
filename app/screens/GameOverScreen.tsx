@@ -1,14 +1,13 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PawPrint, Play } from "lucide-react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { useRouter } from "expo-router";
+import { useDispatch } from "react-redux";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { toggleGameState } from "../redux/slices/gameSlice";
+import { formatTime } from "../components/Clock";
 
 const GameOverScreen = () => {
-  const clock = useSelector((state: RootState) => state.clock);
+  const { timeCopy } = useLocalSearchParams();
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -29,7 +28,9 @@ const GameOverScreen = () => {
           className="absolute top-0"
         />
         <Text className="text-4xl font-bold mt-24">OUCH. You died!</Text>
-        <Text className="text-4xl font-bold mt-24">You survived: {clock}</Text>
+        <Text className="text-4xl font-bold mt-24">
+          You survived: {formatTime(parseInt(timeCopy.toString()))}
+        </Text>
       </View>
 
       {/* Centered Play Button */}

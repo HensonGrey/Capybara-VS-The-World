@@ -5,11 +5,9 @@ export const clockSlice = createSlice({
   initialState: 0, // seconds
   reducers: {
     increaseTime: (state) => {
-      state++;
+      return state + 1;
     },
-    resetTime: (state) => {
-      state = 0;
-    },
+    resetTime: () => 0,
   },
 });
 
