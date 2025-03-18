@@ -8,8 +8,8 @@ import Wall from "../entities/Wall";
 import Minion from "../entities/Minion";
 import Bullet from "../entities/Bullet";
 import PlayerSystem from "../systems/PlayerSystem";
-import BulletSystem from "../systems/BulletSystem";
-import EnemySystem from "../systems/EnemySystem";
+import BulletSystem, { cleanupBulletSystem } from "../systems/BulletSystem";
+import EnemySystem, { cleanupEnemySystem } from "../systems/EnemySystem";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useRouter } from "expo-router";
@@ -18,7 +18,6 @@ import { resetCoins } from "../redux/slices/coinsSlice";
 import { resetTime } from "../redux/slices/clockSlice";
 
 const Game = () => {
-  // State for dimensions and entities
   const dispatch = useDispatch();
   const gameState = useSelector((state: RootState) => state.game);
   const seconds = useSelector((state: RootState) => state.clock);
@@ -64,7 +63,6 @@ const Game = () => {
     const engine = Matter.Engine.create({ enableSleeping: false });
     const world = engine.world;
 
-    // Create player
     const player = Matter.Bodies.rectangle(
       dimensions.width / 2,
       dimensions.height - 50,
@@ -101,9 +99,13 @@ const Game = () => {
   };
 
   const clearWorld = () => {
-    if (entities?.physics?.world) {
-      Matter.World.clear(entities.physics.world, true);
+    if (entities?.physics) {
       Matter.Engine.clear(entities.physics.engine);
+      Matter.World.clear(entities.physics.world, false);
+      setEntities(null);
+
+      cleanupEnemySystem();
+      cleanupBulletSystem();
     }
   };
 

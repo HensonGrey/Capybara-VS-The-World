@@ -8,20 +8,22 @@ import { toggleGameState } from "../redux/slices/gameSlice";
 let minionSpawnTimer = 0;
 const MAX_DELTA = 990 / 60;
 let processedCollisions = new Set();
+let collisionListener: {
+  engine: Matter.Engine;
+  callback: (event: Matter.IEvent<any>) => void;
+} | null = null;
 
 const EnemySystem = (entities: any, { time }: any, dispatch: AppDispatch) => {
   minionSpawnTimer += Math.min(MAX_DELTA, time.delta);
   if (minionSpawnTimer >= 1500) handleMinionSpawning(entities);
 
-  // Reattach the collision listener after the world has been cleared
-  if (entities.physics && entities.physics.engine) {
-    Matter.Events.on(
-      entities.physics.engine,
-      "collisionStart",
-      (event: Matter.IEvent<any>) => {
-        onCollide(entities, event, dispatch);
-      }
-    );
+  //stored together for proper cleanup on game restart
+  if (entities.physics && entities.physics.engine && !collisionListener) {
+    const callback = (event: Matter.IEvent<any>) => {
+      onCollide(entities, event, dispatch);
+    };
+    Matter.Events.on(entities.physics.engine, "collisionStart", callback);
+    collisionListener = { engine: entities.physics.engine, callback };
   }
 
   return entities;
@@ -109,16 +111,15 @@ const handleCollisionStart = (
   dispatch(lowerWallHealth(minion.damage));
 
   if (currentWallHealth <= 1) {
-    dispatch(toggleGameState());
     Matter.World.remove(entities.physics.world, wall);
     delete entities[wallId];
+    dispatch(toggleGameState());
   }
 
   Matter.World.remove(entities.physics.world, minion);
   delete entities[minionId];
 };
 
-// Helper function for other systems
 export const getMinionId = (
   body: Minion,
   entities: any
@@ -130,6 +131,20 @@ export const getMinionId = (
 
 const getWallId = (wall: Body, entities: any): string | undefined => {
   return Object.keys(entities).find((key) => entities[key].body === wall);
+};
+
+// Cleanup function to reset state and remove event listeners
+export const cleanupEnemySystem = () => {
+  if (collisionListener) {
+    Matter.Events.off(
+      collisionListener.engine,
+      "collisionStart",
+      collisionListener.callback
+    );
+    collisionListener = null;
+  }
+  minionSpawnTimer = 0;
+  processedCollisions.clear();
 };
 
 export default EnemySystem;

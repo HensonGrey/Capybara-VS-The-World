@@ -6,20 +6,22 @@ import store from "../redux/store";
 
 let bulletSpawnTimer = 0;
 const MAX_DELTA = 990 / 60;
-let processedCollisions = new Set(); // Reset processedCollisions on world reset
+let processedCollisions = new Set();
+let collisionListener: {
+  engine: Matter.Engine;
+  callback: (event: Matter.IEvent<any>) => void;
+} | null = null;
 
 const BulletSystem = (entities: any, { time }: any, dispatch: AppDispatch) => {
   handleShooting(entities, Math.min(time.delta, MAX_DELTA));
 
-  // Reattach the collision listener after the world has been cleared
-  if (entities.physics && entities.physics.engine) {
-    Matter.Events.on(
-      entities.physics.engine,
-      "collisionStart",
-      (event: Matter.IEvent<any>) => {
-        onEnemyHit(entities, event, dispatch);
-      }
-    );
+  // Reattach the collision listener if it doesn't exist
+  if (entities.physics && entities.physics.engine && !collisionListener) {
+    const callback = (event: Matter.IEvent<any>) => {
+      onEnemyHit(entities, event, dispatch);
+    };
+    Matter.Events.on(entities.physics.engine, "collisionStart", callback);
+    collisionListener = { engine: entities.physics.engine, callback }; // Store the engine and callback
   }
 
   return entities;
@@ -142,6 +144,20 @@ const getMinionId = (body: Minion, entities: any): string | undefined => {
   return Object.keys(entities).find(
     (key) => key.startsWith("minion_") && entities[key].body === body
   );
+};
+
+// Cleanup function to reset state and remove event listeners
+export const cleanupBulletSystem = () => {
+  if (collisionListener) {
+    Matter.Events.off(
+      collisionListener.engine,
+      "collisionStart",
+      collisionListener.callback
+    );
+    collisionListener = null;
+  }
+  bulletSpawnTimer = 0;
+  processedCollisions.clear();
 };
 
 export default BulletSystem;
